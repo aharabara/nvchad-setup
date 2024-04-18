@@ -6,6 +6,10 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 local lspconfig = require "lspconfig"
 local servers = { "html", "cssls" }
 
+
+-- if you just want default config for the servers then put them in a table
+local servers = { "html", "cssls", "tsserver", "clangd"}
+
 -- lsps with default config
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
@@ -21,3 +25,16 @@ lspconfig.tsserver.setup {
   on_init = on_init,
   capabilities = capabilities,
 }
+
+
+lspconfig.phpactor.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  init_options = {
+    ["language_server_php_cs_fixer.enabled"] = true,
+    ["language_server_php_cs_fixer.bin"] = "/usr/local/bin/php-cs-fixer",
+    ["language_server_phpstan.enabled"] = false,
+    ["language_server_psalm.enabled"] = false,
+  },
+}
+
