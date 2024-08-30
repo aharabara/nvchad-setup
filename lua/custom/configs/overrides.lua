@@ -12,6 +12,10 @@ M.treesitter = {
     "c",
     "markdown",
     "markdown_inline",
+    "php_only",
+    "twig",
+    "php",
+    "terraform"
   },
   indent = {
     enable = true,
@@ -28,6 +32,8 @@ M.mason = {
     "stylua",
     "typescript-language-server",
     "phpactor",
+    "php-cs-fixer",
+    "rust-analyzer"
   },
 }
 

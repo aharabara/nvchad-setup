@@ -1,12 +1,46 @@
-
 local overrides = require "custom.configs.overrides"
 return {
+    {
+        "folke/twilight.nvim",
+        lazy = false,
+        cmd = "Twilight",
+        opts = {
+            context = 15,
+            dimming = {
+                alpha = 0.50
+            },
+            expand = {
+                'if_statement',
+                'foreach_statement',
+                'const_declaration',
+                'property_declaration',
+                'object_creation_expression', -- for ApiResource > Quer/Mutations
+                'parameters',
+                'method_declaration',
+                'function_declaration',
+                -- 'class_declaration'
+                
+            }
+        },
+        keys = {
+          {
+            "<leader>ach",
+            "<cmd>Twilight<cr>",
+            desc = "Code - Toggle scoped highlight",
+          },
+        }
+    },
   {
     "stevearc/conform.nvim",
     -- event = 'BufWritePre', -- uncomment for format on save
     config = function()
       require "configs.conform"
     end,
+  },
+
+  {
+    "nvim-tree/nvim-tree.lua",
+    opts = overrides.nvimtree,
   },
   {
     "ahmedkhalf/project.nvim",
@@ -18,6 +52,50 @@ return {
         -- refer to the configuration section below
       }
     end,
+  },
+  {
+    "folke/trouble.nvim",
+    -- branch = "dev",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      height = 50,
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+    keys = {
+      { -- FIXME: move
+        "<leader>2",
+        "<cmd>TroubleToggle document_diagnostics<cr>",
+        desc = "Analyzer - Diagnostics",
+      },
+      {
+        "<leader>7",
+        "<cmd>TroubleToggle lsp_definitions<cr>",
+        desc = "Analyzer - Definitions",
+      },
+      {
+        "<leader>6",
+        "<cmd>TroubleToggle lsp_references<cr>",
+        desc = "Analyzer - References",
+      },
+      -- {
+      --   "<leader>tl",
+      --   "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+      --   desc = "LSP Definitions / references / ... (Trouble)",
+      -- },
+      -- {
+      --   "<leader>tL",
+      --   "<cmd>Trouble loclist toggle<cr>",
+      --   desc = "Location List (Trouble)",
+      -- },
+      -- {
+      --   "<leader>tQ",
+      --   "<cmd>Trouble qflist toggle<cr>",
+      --   desc = "Quickfix List (Trouble)",
+      -- },
+    },
+    -- lazy = false,
   },
   {
     "hrsh7th/nvim-cmp",
@@ -33,7 +111,7 @@ return {
   },
   {
     "crnvl96/lazydocker.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
     cmd = "LazyDocker",
     opts = {}, -- automatically calls `require("lazydocker").setup()`
     dependencies = {
@@ -47,62 +125,73 @@ return {
       vim.keymap.set({ "v", "n" }, "<space><enter>", require("actions-preview").code_actions)
     end,
   },
-    {
-        "smoka7/hop.nvim",
-        cmd = { "HopWord" },
-        version = "*",
-        opts = {},
-    },
+  {
+    "smoka7/hop.nvim",
+    cmd = { "HopWord" },
+    version = "*",
+    opts = {},
+  },
+  opts = function()
+    return require "configs.telescope"
+  end,
+
+  {
+    "nvim-telescope/telescope.nvim",
     opts = function()
-        return require "configs.telescope"
+      return overrides.telescope
     end,
+  },
+  {
+    "mg979/vim-visual-multi",
+    lazy = false,
+  },
+  {
+    "mrcjkb/rustaceanvim",
+    version = "^4", -- Recommended
+    ft = { "rust" },
+  },
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    lazy = false,
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    "williamboman/mason.nvim",
+    opts = overrides.mason,
+  },
 
-    {
-        "nvim-telescope/telescope.nvim",
-        opts = function()
-            return overrides.telescope
-        end,
-    },
-    {
-      "mg979/vim-visual-multi",
-      lazy = false,
-    },
-    {
-        'mrcjkb/rustaceanvim',
-        version = '^4', -- Recommended
-        ft = { 'rust' },
-    },
-    {
-        "folke/todo-comments.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
-        lazy = false,
-        opts = {
-            -- your configuration comes here
-            -- or leave it empty to use the default settings
-            -- refer to the configuration section below
-        }
-    },
-    {
-        "williamboman/mason.nvim",
-        opts = overrides.mason,
-    },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = overrides.treesitter,
+  },
 
-    {
-        "nvim-treesitter/nvim-treesitter",
-        opts = overrides.treesitter,
-    },
-
-    {
-        "nvim-tree/nvim-tree.lua",
-        opts = overrides.nvimtree,
-    },
-    {
-        "neovim/nvim-lspconfig",
-        config = function()
-            require "configs.lspconfig"
-        end, -- Override to setup mason-lspconfig
-    },
-  -- These are some examples, uncomment them if you want to see them work!
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require "configs.lspconfig"
+    end, -- Override to setup mason-lspconfig
+  },
+    -- {
+    --     'arakkkkk/kanban.nvim',
+    --     cms = {'KanbanOpen'},
+    --     lazy = false,
+    --     config = function()
+    --         require("kanban").setup({
+    --             markdown = {
+    --                 description_folder = "./tasks/",  -- Path to save the file corresponding to the task.
+    --                 list_head = "## ",
+    --             }
+    --         })
+    --
+    --     end
+    --
+    -- }
+    -- These are some examples, uncomment them if you want to see them work!
   -- {
   --   "neovim/nvim-lspconfig",
   --   config = function()

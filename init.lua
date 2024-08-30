@@ -5,6 +5,7 @@ vim.g.mapleader = " "
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
 if not vim.loop.fs_stat(lazypath) then
+  vim.print("Installing Lazy...")
   local repo = "https://github.com/folke/lazy.nvim.git"
   vim.fn.system { "git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath }
 end
@@ -13,6 +14,7 @@ vim.opt.rtp:prepend(lazypath)
 
 local lazy_config = require "configs.lazy"
 
+
 -- load plugins
 require("lazy").setup({
   {
@@ -20,11 +22,10 @@ require("lazy").setup({
     lazy = false,
     branch = "v2.5",
     import = "nvchad.plugins",
-    config = function()
+   config = function()
       require "options"
     end,
   },
-
   { import = "plugins" },
 }, lazy_config)
 
