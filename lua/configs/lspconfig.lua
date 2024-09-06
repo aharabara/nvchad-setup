@@ -7,7 +7,7 @@ local lspconfig = require "lspconfig"
 local servers = { "html", "cssls" }
 
 -- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "tsserver", "clangd", "yamlls", "bashls"}
+local servers = { "html", "cssls", "ts_ls", "clangd", "yamlls", "bashls"}
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
@@ -19,7 +19,7 @@ for _, lsp in ipairs(servers) do
 end
 
 -- typescript
-lspconfig.tsserver.setup {
+lspconfig.ts_ls.setup {
   on_attach = on_attach,
   on_init = on_init,
   capabilities = capabilities,
