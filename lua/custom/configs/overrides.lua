@@ -33,7 +33,8 @@ M.mason = {
     "typescript-language-server",
     "phpactor",
     "php-cs-fixer",
-    "rust-analyzer"
+    "rust-analyzer",
+    "bash-language-server"
   },
 }
 
