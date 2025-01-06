@@ -1,0 +1,48 @@
+#!/bin/bash
+
+AWS_PROFILE=reg-int
+
+aws sso login
+
+# List of security group IDs to update
+# TODO: rewrite to have possibility to select which security group and which ports to open
+SECURITY_GROUP_IDS=("sg-0b3ce2d844fc70352")
+
+# Description tag for the rule
+DESCRIPTION="aharabara access"
+
+# Get your current public IP address
+MY_IP=$(curl -s https://checkip.amazonaws.com)
+
+# CIDR notation for the IP address
+MY_CIDR="${MY_IP}/32"
+
+# Iterate over each security group and update or add the rule
+for SG_ID in "${SECURITY_GROUP_IDS[@]}"; do
+    echo "Checking security group: $SG_ID"
+
+    # Fetch existing security group rules
+    RULES=$(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$SG_ID" --query "SecurityGroupRules[?Description=='$DESCRIPTION']")
+
+    # Check if the rule with the given description exists
+    RULE_ID=$(echo "$RULES" | jq -r '.[0].SecurityGroupRuleId')
+
+    if [ "$RULE_ID" != "null" ]; then
+        # Revoke the existing rule
+        echo "Revoking existing rule: $RULE_ID"
+        aws ec2 revoke-security-group-ingress --group-id "$SG_ID" --security-group-rule-ids "$RULE_ID"
+    fi
+
+    # Add new ingress rule
+    echo "Authorizing new rule for IP: $MY_CIDR"
+    aws ec2 authorize-security-group-ingress --group-id "$SG_ID" \
+        --protocol tcp --port 0-65535 --cidr "$MY_CIDR"
+
+    # Update rule description
+    echo "Updating description for new rule"
+    aws ec2 update-security-group-rule-descriptions-ingress --group-id "$SG_ID" \
+        --ip-permissions "IpProtocol=tcp,FromPort=0,ToPort=65535,IpRanges=[{CidrIp=$MY_CIDR,Description='$DESCRIPTION'}]"
+    echo "Updated security group: $SG_ID with IP: $MY_CIDR"
+done
+
+echo "All specified security groups have been updated."

@@ -1,35 +1,55 @@
 local overrides = require "custom.configs.overrides"
 return {
-    {
-        "folke/twilight.nvim",
-        lazy = false,
-        cmd = "Twilight",
-        opts = {
-            context = 15,
-            dimming = {
-                alpha = 0.50
-            },
-            expand = {
-                'if_statement',
-                'foreach_statement',
-                'const_declaration',
-                'property_declaration',
-                'object_creation_expression', -- for ApiResource > Quer/Mutations
-                'parameters',
-                'method_declaration',
-                'function_declaration',
-                -- 'class_declaration'
-                
-            }
-        },
-        keys = {
-          {
-            "<leader>ach",
-            "<cmd>Twilight<cr>",
-            desc = "Code - Toggle scoped highlight",
-          },
-        }
+
+  {
+    "folke/twilight.nvim",
+    lazy = false,
+    cmd = "Twilight",
+    opts = {
+      context = 15,
+      dimming = {
+        alpha = 0.50,
+      },
+      expand = {
+        "if_statement",
+        "foreach_statement",
+        "const_declaration",
+        "property_declaration",
+        "object_creation_expression", -- for ApiResource > Quer/Mutations
+        "parameters",
+        "method_declaration",
+        "function_declaration",
+        -- 'class_declaration'
+      },
     },
+    keys = {
+      {
+        "<leader>ach",
+        "<cmd>Twilight<cr>",
+        desc = "Code - Toggle scoped highlight",
+      },
+    },
+  },
+  {
+    "nvim-neotest/neotest",
+    lazy = true,
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "olimorris/neotest-phpunit",
+    },
+    config = function()
+      require("neotest").setup {
+        adapters = {
+          require("neotest-phpunit")({
+                        filter_dirs = { "vendor" }
+        }),
+        },
+      }
+    end,
+  },
   {
     "stevearc/conform.nvim",
     -- event = 'BufWritePre', -- uncomment for format on save
@@ -42,21 +62,21 @@ return {
     "nvim-tree/nvim-tree.lua",
     opts = overrides.nvimtree,
   },
-  {
-    "ahmedkhalf/project.nvim",
-    lazy = false,
-    config = function()
-      require("project_nvim").setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      }
-    end,
-  },
+  -- {
+  --   "ahmedkhalf/project.nvim",
+  --   lazy = false,
+  --   config = function()
+  --     require("project_nvim").setup {
+  --       -- your configuration comes here
+  --       -- or leave it empty to use the default settings
+  --       -- refer to the configuration section below
+  --     }
+  --   end,
+  -- },
   {
     "folke/trouble.nvim",
     -- branch = "dev",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       height = 50,
       -- your configuration comes here
@@ -145,11 +165,11 @@ return {
     "mg979/vim-visual-multi",
     lazy = false,
   },
-  {
-    "mrcjkb/rustaceanvim",
-    version = "^4", -- Recommended
-    ft = { "rust" },
-  },
+  -- {
+  --   "mrcjkb/rustaceanvim",
+  --   version = "^4", -- Recommended
+  --   ft = { "rust" },
+  -- },
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -176,22 +196,66 @@ return {
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
-    -- {
-    --     'arakkkkk/kanban.nvim',
-    --     cms = {'KanbanOpen'},
-    --     lazy = false,
-    --     config = function()
-    --         require("kanban").setup({
-    --             markdown = {
-    --                 description_folder = "./tasks/",  -- Path to save the file corresponding to the task.
-    --                 list_head = "## ",
-    --             }
-    --         })
-    --
-    --     end
-    --
-    -- }
-    -- These are some examples, uncomment them if you want to see them work!
+  {
+    "grapp-dev/nui-components.nvim",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+    },
+  },
+  {
+      "olimorris/codecompanion.nvim",
+        lazy = false,
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter",
+      },
+
+      config = function()
+            require("codecompanion").setup({
+                display = {
+                    action_palette = {
+                        provider = "telescope"
+                    },
+                    diff = {
+                        provider = mini_pick
+                    }
+                },
+                      strategies = {
+        chat = {
+          adapter = "openai",
+        },
+        inline = {
+          adapter = "openai",
+        },
+      },
+                  adapters = {
+                    openai = function()
+                      return require("codecompanion.adapters").extend("openai", {
+                        env = {
+                        },
+                      })
+                    end,
+                  },
+                })
+        end,
+    },
+    { 'echasnovski/mini.pick', version = '*' },
+  -- {
+  --     'arakkkkk/kanban.nvim',
+  --     cms = {'KanbanOpen'},
+  --     lazy = false,
+  --     config = function()
+  --         require("kanban").setup({
+  --             markdown = {
+  --                 description_folder = "./tasks/",  -- Path to save the file corresponding to the task.
+  --                 list_head = "## ",
+  --             }
+  --         })
+  --
+  --     end
+  --
+  -- }
+  -- These are some examples, uncomment them if you want to see them work!
   -- {
   --   "neovim/nvim-lspconfig",
   --   config = function()

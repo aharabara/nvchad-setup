@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Directory where your SSH keys are stored
+SSH_KEY_DIR="$HOME/.ssh"
+
+ssh_keys=$(find "$SSH_KEY_DIR" -maxdepth 1 -type f \
+    -not -name '*.pub' -not -name '*.*' -not -name 'config' \
+    -exec basename {} \; | sort)
+
+
+# List all files in the SSH key directory and use gum filter for selection
+selected_key=$(echo "$ssh_keys" | gum filter --placeholder "Type to search SSH keys...")
+
+# If a key was selected, switch to it
+if [ -n "$selected_key" ]; then
+    # Full path to the selected key
+    selected_key_path="$SSH_KEY_DIR/$selected_key"
+    
+    # Set the selected key as the current key (e.g., for git)
+    eval "$(ssh-agent -s)" > /dev/null
+    ssh-add "$selected_key_path"
+    
+    gum style --foreground=42 "( ^__^)  | Switched to SSH key: $selected_key_path"
+    
+else
+    gum style --foreground=45 "¯\_(⊙︿⊙)_/¯  | No SSH key selected."
+fi

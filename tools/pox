@@ -1,0 +1,41 @@
+#!/bin/bash
+export PODMAN_COMPOSE_WARNING_LOGS=false
+
+# Check if gum is installed
+if ! command -v gum &> /dev/null; then
+    echo "gum could not be found. Please install it from https://github.com/charmbracelet/gum."
+    exit 1
+fi
+
+# Check if docker-compose is installed
+# if ! command -v docker &> /dev/null; then
+#     echo "docker could not be found. Please install it."
+#     exit 1
+# fi
+
+# Find the compose file
+if [[ -f "compose.yaml" ]]; then
+    COMPOSE_FILE="compose.yaml"
+elif [[ -f "docker-compose.yml" ]]; then
+    COMPOSE_FILE="docker-compose.yml"
+elif [[ -f "docker-compose.yaml" ]]; then
+    COMPOSE_FILE="docker-compose.yaml"
+else
+    echo "No compose file found. Please ensure you have a compose.yaml or docker-compose.yaml file."
+    exit 1
+fi
+
+# Get the list of services
+SERVICES=$(podman compose -f "$COMPOSE_FILE" config --services)
+
+# Use gum to select a service
+SELECTED_SERVICE=$(echo "$SERVICES" | gum choose --height=10 --header="Select a service: ")
+
+if [ -z "$SELECTED_SERVICE" ]; then
+    echo "No service selected."
+    exit 1
+fi
+
+# Enter the selected service container
+echo "Entering service: $SELECTED_SERVICE"
+podman compose -f "$COMPOSE_FILE" exec "$SELECTED_SERVICE" /bin/sh

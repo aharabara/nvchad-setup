@@ -1,0 +1,126 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/projectmanager.json"
+
+# Ensure the configuration file exists
+mkdir -p "$(dirname "$CONFIG_FILE")"
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "[]" > "$CONFIG_FILE"
+fi
+
+# Function to display project list and change directory
+function list_and_change() {
+  local home_prefix="$HOME/"
+  local projects
+  projects=$(jq -r 'sort_by(if .priority then -1 else .accessed_counter end) | reverse | .[].path' "$CONFIG_FILE")
+
+  if [ -z "$projects" ]; then
+    gum style --foreground 212 "No projects found."
+    exit 0
+  fi
+
+  # Replace home directory with ~ for display purposes
+  local display_projects
+  display_projects=$(echo "$projects" | sed "s|^$home_prefix|~/|")
+
+  local selected
+  selected=$(echo "$display_projects" | gum filter --no-fuzzy)
+
+  if [ -n "$selected" ]; then
+    # Convert selected path back to full path
+    local full_path
+    full_path=$(echo "$selected" | sed "s|^~/|$home_prefix|")
+    cd "$(eval echo "$full_path")" || gum style --foreground 196 "Failed to change directory."
+    
+    # Increase accessed_counter
+    jq --arg path "$full_path" '. | map(if .path == $path then .accessed_counter += 1 else . end)' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+  fi
+}
+
+# Function to add the current directory as a project
+function add_project() {
+  local path
+  path=$(pwd)
+
+  # Check if the current project is already in the list
+  if jq -e --arg path "$path" '.[] | select(.path==$path)' "$CONFIG_FILE" > /dev/null; then
+    gum style --foreground 212 "Project already exists."
+  else
+    jq --arg path "$path" '. + [{path: $path, accessed_counter: 0, priority: false}]' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+    gum style --foreground 82 "Project added."
+  fi
+}
+
+# Function to delete a project
+function delete_project() {
+  local home_prefix="$HOME/"
+  local projects
+  projects=$(jq -r '.[] | "\(.path)"' "$CONFIG_FILE")
+  
+  if [ -z "$projects" ]; then
+    gum style --foreground 212 "No projects to delete."
+    exit 0
+  fi
+
+  # Replace home directory with ~ for display purposes
+  local display_projects
+  display_projects=$(echo "$projects" | sed "s|^$home_prefix|~/|")
+
+  local selected
+  selected=$(echo "$display_projects" | gum filter --no-fuzzy)
+
+  if [ -n "$selected" ]; then
+    # Convert selected path back to full path
+    local full_path
+    full_path=$(echo "$selected" | sed "s|^~/|$home_prefix|")
+    jq --arg path "$full_path" 'del(.[] | select(.path==$path))' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+    gum style --foreground 196 "Project deleted."
+  fi
+}
+
+# Function to prioritize a project
+function prioritize_project() {
+  local current_dir
+  current_dir=$(pwd)
+
+  # Check if the current directory is already in the list
+  if jq -e --arg path "$current_dir" '.[] | select(.path==$path)' "$CONFIG_FILE" > /dev/null; then
+    jq --arg path "$current_dir" '. | map(if .path == $path then .priority = true else . end)' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+  else
+    jq --arg path "$current_dir" '[{path: $path, accessed_counter: 0, priority: true}] + .' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+  fi
+
+  gum style --foreground 82 "Project prioritized."
+}
+
+# Function to deprioritize a project
+function deprioritize_project() {
+  local current_dir
+  current_dir=$(pwd)
+
+  if jq -e --arg path "$current_dir" '.[] | select(.path==$path)' "$CONFIG_FILE" > /dev/null; then
+    jq --arg path "$current_dir" '. | map(if .path == $path then .priority = false else . end)' "$CONFIG_FILE" > temp.json && mv temp.json "$CONFIG_FILE"
+    gum style --foreground 212 "Project deprioritized."
+  else
+    gum style --foreground 196 "Current directory is not a project."
+  fi
+}
+
+# Main logic
+case "$1" in
+  add)
+    add_project
+    ;;
+  del)
+    delete_project
+    ;;
+  prio)
+    prioritize_project
+    ;;
+  deprio)
+    deprioritize_project
+    ;;
+  *)
+    list_and_change
+    ;;
+esac

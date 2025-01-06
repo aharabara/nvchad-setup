@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Ensure gum is installed
+if ! command -v gum &> /dev/null; then
+    echo "gum could not be found, please install it first."
+    exit 1
+fi
+
+# Ensure jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq could not be found, please install it first."
+    exit 1
+fi
+
+# Get the AWS region from environment or use default
+AWS_REGION=${AWS_REGION:-us-east-1}
+
+# Fetch the list of IP sets
+ip_sets=$(aws wafv2 list-ip-sets --scope=CLOUDFRONT --region=us-east-1 --output json | jq -r '.IPSets[] | "\(.Name) \(.Id) \(.LockToken)"')
+
+# Prompt the user to select an IP set
+selected_ip_set=$(echo "$ip_sets" | gum choose --header "Select an IP Set to manage:")
+
+echo "Selected $selected_ip_set"
+
+# Extract the ID and Name from the selected IP set
+ip_set_name=$(echo "$selected_ip_set" | awk '{print $1}')
+ip_set_id=$(echo "$selected_ip_set" | awk '{print $2}')
+ip_set_token=$(echo "$selected_ip_set" | awk '{print $3}')
+
+# Get the user's IP
+my_ip="$(curl -s http://checkip.amazonaws.com)/32"
+
+# Fetch the IP set details to check if the IP already exists
+ip_set_details=$(aws wafv2 get-ip-set  --scope=CLOUDFRONT --region=us-east-1 --id "$ip_set_id" --name "$ip_set_name" --output json)
+
+if echo "$ip_set_details" | jq -e ".IPSet.Addresses | index(\"$my_ip\")" > /dev/null; then
+    # If IP exists, ask if it should be removed
+    if gum confirm "Your IP ($my_ip) is already in the IP set. Do you want to remove it?"; then
+        updated_addresses=$(echo "$ip_set_details" | jq -r ".IPSet.Addresses | map(select(. != \"$my_ip\"))")
+        action="REMOVE"
+    else
+        echo "No changes made."
+        exit 0
+    fi
+else
+    # If IP does not exist, ask if it should be added
+    if gum confirm "Your IP ($my_ip) is not in the IP set. Do you want to add it?"; then
+        updated_addresses=$(echo "$ip_set_details" | jq -r ".IPSet.Addresses + [\"$my_ip\"]")
+        action="ADD"
+    else
+        echo "No changes made."
+        exit 0
+    fi
+fi
+
+# Update the IP set
+echo "Updating IP set..."
+aws wafv2 update-ip-set --scope=CLOUDFRONT --region=us-east-1 --id "$ip_set_id" --name "$ip_set_name" --lock-token "$ip_set_token" --addresses "$updated_addresses"
+
+echo "Your IP ($my_ip) has been $action in the IP set '$ip_set_name'."

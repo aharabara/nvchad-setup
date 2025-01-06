@@ -7,7 +7,7 @@ local lspconfig = require "lspconfig"
 local servers = { "html", "cssls" }
 
 -- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "ts_ls", "clangd", "yamlls", "bashls"}
+local servers = { "html", "cssls", "ts_ls", "clangd", "bashls", "marksman"}
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do

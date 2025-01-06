@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# Function to list and display SSM parameters, with options to edit or delete
+list_parameters() {
+  # Fetch all parameter names from AWS SSM
+  PARAM_NAMES=$(aws ssm describe-parameters --query "Parameters[].Name" --output text)
+
+  # Convert parameter names into a newline-separated list
+  PARAM_LIST=$(echo "$PARAM_NAMES" | tr '\t' '\n')
+
+  # Use gum to create a filterable menu for selecting a parameter
+  SELECTED_PARAM=$(echo "$PARAM_LIST" | gum filter --placeholder "Select an SSM parameter")
+
+  # If no parameter is selected, exit the function
+  if [ -z "$SELECTED_PARAM" ]; then
+    echo "[ - ] Skipped: No parameter selected." | gum style --foreground 212
+    return
+  fi
+
+  # Fetch the parameter value
+  PARAM_VALUE=$(aws ssm get-parameter --name "$SELECTED_PARAM" --with-decryption --query "Parameter.Value" --output text)
+
+  # Display the parameter value using gum
+  echo "Parameter Name: $SELECTED_PARAM" | gum style --foreground 33
+  echo "Parameter Value:" | gum style --foreground 33
+  echo "$PARAM_VALUE" | gum style --border normal --padding "1 2" --margin "1" --width 120 --align center
+
+  # Offer options to edit or delete the parameter
+  ACTION=$(gum choose "edit" "delete" "cancel")
+
+  case $ACTION in
+    "edit")
+      edit_parameter "$SELECTED_PARAM" "$PARAM_VALUE"
+      ;;
+    "delete")
+      delete_parameter "$SELECTED_PARAM"
+      ;;
+    "cancel")
+      echo "[ - ] Skipped: Operation cancelled." | gum style --foreground 212
+      ;;
+    *)
+      echo "[ X ] Failed: Invalid option." | gum style --foreground 160
+      ;;
+  esac
+}
+
+# Function to edit an SSM parameter
+edit_parameter() {
+  PARAM_NAME="$1"
+  CURRENT_VALUE="$2"
+
+  # Prompt for new parameter value
+  NEW_VALUE=$(gum input --value "$CURRENT_VALUE" --placeholder "Enter new parameter value (JSON supported)")
+
+  # If no new value is entered, exit the function
+  if [ -z "$NEW_VALUE" ]; then
+    echo "[ - ] Skipped: No new value entered." | gum style --foreground 212
+    return
+  fi
+
+  # Update the parameter using AWS CLI
+  aws ssm put-parameter --name "$PARAM_NAME" --value "$NEW_VALUE" --type "String" --overwrite
+
+  echo "[ V ] Success: Parameter '$PARAM_NAME' updated successfully." | gum style --foreground 34
+}
+
+# Function to delete an SSM parameter
+delete_parameter() {
+  PARAM_NAME="$1"
+
+  # Confirm deletion
+  CONFIRM_DELETE=$(gum confirm "Are you sure you want to delete '$PARAM_NAME'?")
+
+  if $CONFIRM_DELETE; then
+    aws ssm delete-parameter --name "$PARAM_NAME"
+    echo "[ V ] Success: Parameter '$PARAM_NAME' deleted successfully." | gum style --foreground 34
+  else
+    echo "[ - ] Skipped: Deletion cancelled." | gum style --foreground 212
+  fi
+}
+
+# Function to create a new SSM parameter
+create_parameter() {
+  # Prompt for parameter name
+  PARAM_NAME=$(gum input --placeholder "Enter parameter name")
+
+  # If no parameter name is entered, exit the function
+  if [ -z "$PARAM_NAME" ]; then
+    echo "[ - ] Skipped: No parameter name entered." | gum style --foreground 212
+    return
+  fi
+
+  # Prompt for parameter value
+  PARAM_VALUE=$(gum input --placeholder "Enter parameter value (JSON supported)")
+
+  # If no parameter value is entered, exit the function
+  if [ -z "$PARAM_VALUE" ]; then
+    echo "[ - ] Skipped: No parameter value entered." | gum style --foreground 212
+    return
+  fi
+
+  # Prompt for parameter type
+  PARAM_TYPE=$(gum choose "String" "StringList" "SecureString")
+
+  # Create the parameter using AWS CLI
+  aws ssm put-parameter --name "$PARAM_NAME" --value "$PARAM_VALUE" --type "$PARAM_TYPE" --overwrite
+
+  echo "[ V ] Success: Parameter '$PARAM_NAME' created successfully." | gum style --foreground 34
+}
+
+# Main script menu
+while true; do
+  ACTION=$(gum choose "list and manage" "create" "exit")
+
+  case $ACTION in
+    "list and manage")
+      list_parameters
+      ;;
+    "create")
+      create_parameter
+      ;;
+    "exit")
+      echo "[ V ] Success: Exiting." | gum style --foreground 34
+      break
+      ;;
+    *)
+      echo "[ X ] Failed: Invalid option." | gum style --foreground 160
+      break
+      ;;
+  esac
+done
