@@ -1,6 +1,10 @@
 local overrides = require "custom.configs.overrides"
 return {
-
+  {
+        "github/copilot.vim",
+        lazy = false,
+        cmd = "Copilot"
+   },
   {
     "folke/twilight.nvim",
     lazy = false,
@@ -196,49 +200,49 @@ return {
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
-  {
-    "grapp-dev/nui-components.nvim",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-    },
-  },
-  {
-      "olimorris/codecompanion.nvim",
-        lazy = false,
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-treesitter/nvim-treesitter",
-      },
-
-      config = function()
-            require("codecompanion").setup({
-                display = {
-                    action_palette = {
-                        provider = "telescope"
-                    },
-                    diff = {
-                        provider = mini_pick
-                    }
-                },
-                      strategies = {
-        chat = {
-          adapter = "openai",
-        },
-        inline = {
-          adapter = "openai",
-        },
-      },
-                  adapters = {
-                    openai = function()
-                      return require("codecompanion.adapters").extend("openai", {
-                        env = {
-                        },
-                      })
-                    end,
-                  },
-                })
-        end,
-    },
+  -- {
+  --   "grapp-dev/nui-components.nvim",
+  --   dependencies = {
+  --     "MunifTanjim/nui.nvim",
+  --   },
+  -- },
+  -- { 
+  --     "olimorris/codecompanion.nvim",
+  --       lazy = false,
+  --     dependencies = {
+  --       "nvim-lua/plenary.nvim",
+  --       "nvim-treesitter/nvim-treesitter",
+  --     },
+  --
+  --     config = function()
+  --           require("codecompanion").setup({
+  --               display = {
+  --                   action_palette = {
+  --                       provider = "telescope"
+  --                   },
+  --                   diff = {
+  --                       provider = mini_pick
+  --                   }
+  --               },
+  --                     strategies = {
+  --       chat = {
+  --         adapter = "openai",
+  --       },
+  --       inline = {
+  --         adapter = "openai",
+  --       },
+  --     },
+  --                 adapters = {
+  --                   openai = function()
+  --                     return require("codecompanion.adapters").extend("openai", {
+  --                       env = {
+  --                       },
+  --                     })
+  --                   end,
+  --                 },
+  --               })
+  --       end,
+  --   },
     { 'echasnovski/mini.pick', version = '*' },
   -- {
   --     'arakkkkk/kanban.nvim',
@@ -274,13 +278,15 @@ return {
   -- 	},
   -- },
   --
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
+--   {
+--   	"nvim-treesitter/nvim-treesitter",
+--   	opts = {
+--   		ensure_installed = {
+--   			"vim", "lua", "vimdoc",
+--        "html", "css"
+--   		},
+--
+-- },
+--   	},
   -- },
 }
