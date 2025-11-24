@@ -1,4 +1,4 @@
-### Keys remapping
+## Keys remapping
 ```shell
 sudo add-apt-repository ppa:keyd-team/ppa
 sudo apt update
@@ -32,3 +32,10 @@ kp0=macro(leftalt+h)
 kp5=macro(space space)
 
 ```
+
+
+## Prerequisites
+```
+brew install luarocks
+```
+
