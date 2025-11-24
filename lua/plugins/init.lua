@@ -1,10 +1,26 @@
 local overrides = require "custom.configs.overrides"
 return {
   {
-        "github/copilot.vim",
-        lazy = false,
-        cmd = "Copilot"
-   },
+    "stevearc/oil.nvim",
+    opts = {},
+    lazy = false,
+    cmd = { "Oil" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("oil").setup {
+        -- Пример настройки: открывать Oil вместо netrw
+        default_file_explorer = true,
+        view_options = {
+          show_hidden = true,
+        },
+      }
+    end,
+  },
+  {
+    "github/copilot.vim",
+    lazy = false,
+    cmd = "Copilot",
+  },
   {
     "folke/twilight.nvim",
     lazy = false,
@@ -47,24 +63,19 @@ return {
     config = function()
       require("neotest").setup {
         adapters = {
-          require("neotest-phpunit")({
-                        filter_dirs = { "vendor" }
-        }),
+          require "neotest-phpunit" {
+            filter_dirs = { "vendor" },
+          },
         },
       }
     end,
   },
   {
     "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
+    event = "BufWritePre", -- uncomment for format on save
     config = function()
       require "configs.conform"
     end,
-  },
-
-  {
-    "nvim-tree/nvim-tree.lua",
-    opts = overrides.nvimtree,
   },
   -- {
   --   "ahmedkhalf/project.nvim",
@@ -79,6 +90,7 @@ return {
   -- },
   {
     "folke/trouble.nvim",
+    cmd = { "Trouble", "TroubleToggle" },
     -- branch = "dev",
     -- dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
@@ -155,10 +167,6 @@ return {
     version = "*",
     opts = {},
   },
-  opts = function()
-    return require "configs.telescope"
-  end,
-
   {
     "nvim-telescope/telescope.nvim",
     opts = function()
@@ -169,11 +177,6 @@ return {
     "mg979/vim-visual-multi",
     lazy = false,
   },
-  -- {
-  --   "mrcjkb/rustaceanvim",
-  --   version = "^4", -- Recommended
-  --   ft = { "rust" },
-  -- },
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -193,72 +196,13 @@ return {
     "nvim-treesitter/nvim-treesitter",
     opts = overrides.treesitter,
   },
-
   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
-  -- {
-  --   "grapp-dev/nui-components.nvim",
-  --   dependencies = {
-  --     "MunifTanjim/nui.nvim",
-  --   },
-  -- },
-  -- { 
-  --     "olimorris/codecompanion.nvim",
-  --       lazy = false,
-  --     dependencies = {
-  --       "nvim-lua/plenary.nvim",
-  --       "nvim-treesitter/nvim-treesitter",
-  --     },
-  --
-  --     config = function()
-  --           require("codecompanion").setup({
-  --               display = {
-  --                   action_palette = {
-  --                       provider = "telescope"
-  --                   },
-  --                   diff = {
-  --                       provider = mini_pick
-  --                   }
-  --               },
-  --                     strategies = {
-  --       chat = {
-  --         adapter = "openai",
-  --       },
-  --       inline = {
-  --         adapter = "openai",
-  --       },
-  --     },
-  --                 adapters = {
-  --                   openai = function()
-  --                     return require("codecompanion.adapters").extend("openai", {
-  --                       env = {
-  --                       },
-  --                     })
-  --                   end,
-  --                 },
-  --               })
-  --       end,
-  --   },
-    { 'echasnovski/mini.pick', version = '*' },
-  -- {
-  --     'arakkkkk/kanban.nvim',
-  --     cms = {'KanbanOpen'},
-  --     lazy = false,
-  --     config = function()
-  --         require("kanban").setup({
-  --             markdown = {
-  --                 description_folder = "./tasks/",  -- Path to save the file corresponding to the task.
-  --                 list_head = "## ",
-  --             }
-  --         })
-  --
-  --     end
-  --
-  -- }
+  { "echasnovski/mini.pick", version = "*" },
   -- These are some examples, uncomment them if you want to see them work!
   -- {
   --   "neovim/nvim-lspconfig",
@@ -276,17 +220,5 @@ return {
   -- 			"html-lsp", "css-lsp" , "prettier"
   -- 		},
   -- 	},
-  -- },
-  --
---   {
---   	"nvim-treesitter/nvim-treesitter",
---   	opts = {
---   		ensure_installed = {
---   			"vim", "lua", "vimdoc",
---        "html", "css"
---   		},
---
--- },
---   	},
   -- },
 }
