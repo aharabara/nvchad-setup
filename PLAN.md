@@ -8,6 +8,9 @@
 - [ ] make sure mason, treesitter, lsp, dap, plugins are installed automatically on first run
 - [ ] add task manager
 - [ ] update aws shell scripts. If possible - unify into one and integrate into nvim
+- [ ] define profile for different use cases (aws, php, js, general)
+  - [ ] think on the loading system 
+- [ ] integrate lazygit, lazydocker and trouble into numpad (think how to do that nicely)
 
 ### General plugins
 - [ ] composer integration (package list from composer.json > choose and update/delete/change version)

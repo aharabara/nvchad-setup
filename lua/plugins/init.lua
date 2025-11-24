@@ -1,6 +1,18 @@
 local overrides = require "custom.configs.overrides"
 return {
   {
+    "stevearc/overseer.nvim",
+    ---@module 'overseer'
+    ---@type overseer.SetupOpts
+    cmd = { "Overseer" },
+    lazy = false,
+    opts = {
+      task_list = {
+        direction = "right",
+      },
+    },
+  },
+  {
     "stevearc/oil.nvim",
     opts = {},
     lazy = false,
