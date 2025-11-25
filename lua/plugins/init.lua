@@ -9,6 +9,9 @@ return {
     opts = {
       task_list = {
         direction = "right",
+        render = function(task)
+          return require("overseer.render").format_compact(task)
+        end,
       },
     },
   },
