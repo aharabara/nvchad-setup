@@ -1,5 +1,5 @@
 require "nvchad.mappings"
-local neotest = require "neotest"
+-- local neotest = require "neotest"
 -- add yours here
 
 local map = vim.keymap.set
@@ -24,11 +24,11 @@ map("n", "<leader>0", "<cmd>Telescope projects<CR>", { desc = "List projects" })
 map("n", "<A-Up>", ":m .-2<CR>")
 map("n", "<A-Down>", ":m .+1<CR>")
 
-map("n", "<leader>te", neotest.run.run)
-map("n", "<leader>tf", function()
-  neotest.run.run(vim.fn.expand "%")
-end)
-
+-- map("n", "<leader>te", neotest.run.run)
+-- map("n", "<leader>tf", function()
+--   neotest.run.run(vim.fn.expand "%")
+-- end)
+--
 -- map("n", "<leader>tl", function()
 --     require("custom.aws-plugin").show_tasks()
 -- end, { desc = "AWS action" })

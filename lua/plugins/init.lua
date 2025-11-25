@@ -65,26 +65,27 @@ return {
       },
     },
   },
-  {
-    "nvim-neotest/neotest",
-    lazy = true,
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "olimorris/neotest-phpunit",
-    },
-    config = function()
-      require("neotest").setup {
-        adapters = {
-          require "neotest-phpunit" {
-            filter_dirs = { "vendor" },
-          },
-        },
-      }
-    end,
-  },
+  -- TODO: Implement a way to load extension by profile (PHP, Pyhton, JS, etc)
+  -- {
+  --   "nvim-neotest/neotest",
+  --   lazy = true,
+  --   dependencies = {
+  --     "nvim-neotest/nvim-nio",
+  --     "nvim-lua/plenary.nvim",
+  --     "antoinemadec/FixCursorHold.nvim",
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "olimorris/neotest-phpunit",
+  --   },
+  --   config = function()
+  --     require("neotest").setup {
+  --       adapters = {
+  --         require "neotest-phpunit" {
+  --           filter_dirs = { "vendor" },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
   {
     "stevearc/conform.nvim",
     event = "BufWritePre", -- uncomment for format on save
@@ -92,17 +93,6 @@ return {
       require "configs.conform"
     end,
   },
-  -- {
-  --   "ahmedkhalf/project.nvim",
-  --   lazy = false,
-  --   config = function()
-  --     require("project_nvim").setup {
-  --       -- your configuration comes here
-  --       -- or leave it empty to use the default settings
-  --       -- refer to the configuration section below
-  --     }
-  --   end,
-  -- },
   {
     "folke/trouble.nvim",
     cmd = { "Trouble", "TroubleToggle" },
@@ -170,13 +160,6 @@ return {
     },
   },
   {
-    lazy = false,
-    "aznhe21/actions-preview.nvim",
-    config = function()
-      vim.keymap.set({ "v", "n" }, "<space><enter>", require("actions-preview").code_actions)
-    end,
-  },
-  {
     "smoka7/hop.nvim",
     cmd = { "HopWord" },
     version = "*",
@@ -184,13 +167,13 @@ return {
   },
   {
     "nvim-telescope/telescope.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope-ui-select.nvim", -- Add the extension here
+    },
     opts = function()
       return overrides.telescope
     end,
-  },
-  {
-    "mg979/vim-visual-multi",
-    lazy = false,
   },
   {
     "folke/todo-comments.nvim",
@@ -217,7 +200,7 @@ return {
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
-  { "echasnovski/mini.pick", version = "*" },
+  { lazy = false, "echasnovski/mini.pick", version = "*" },
   -- These are some examples, uncomment them if you want to see them work!
   -- {
   --   "neovim/nvim-lspconfig",
