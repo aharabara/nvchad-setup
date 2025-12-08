@@ -8,13 +8,37 @@ return {
     lazy = false,
     opts = {
       task_list = {
-        direction = "right",
+        -- direction = "right",
         render = function(task)
           return require("overseer.render").format_compact(task)
         end,
       },
     },
   },
+  {
+      "folke/snacks.nvim",
+      priority = 1000,
+      lazy = false,
+      ---@type snacks.Config
+      opts = {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+        
+        -- bigfile = { enabled = true },
+        -- dashboard = { enabled = true },
+        -- explorer = { enabled = true },
+        -- indent = { enabled = true },
+        -- input = { enabled = true },
+        picker = { enabled = true },
+        -- notifier = { enabled = true },
+        -- quickfile = { enabled = true },
+        -- scope = { enabled = true },
+        -- scroll = { enabled = true },
+        -- statuscolumn = { enabled = true },
+        -- words = { enabled = true },
+      },
+    },
   {
     "stevearc/oil.nvim",
     opts = {},
@@ -103,21 +127,21 @@ return {
       -- refer to the configuration section below
     },
     keys = {
-      { -- FIXME: move
-        "<leader>2",
-        "<cmd>TroubleToggle document_diagnostics<cr>",
-        desc = "Analyzer - Diagnostics",
-      },
-      {
-        "<leader>7",
-        "<cmd>TroubleToggle lsp_definitions<cr>",
-        desc = "Analyzer - Definitions",
-      },
-      {
-        "<leader>6",
-        "<cmd>TroubleToggle lsp_references<cr>",
-        desc = "Analyzer - References",
-      },
+      -- { -- FIXME: move
+      --   "<leader>2",
+      --   "<cmd>TroubleToggle document_diagnostics<cr>",
+      --   desc = "Analyzer - Diagnostics",
+      -- },
+      -- {
+      --   "<leader>7",
+      --   "<cmd>TroubleToggle lsp_definitions<cr>",
+      --   desc = "Analyzer - Definitions",
+      -- },
+      -- {
+      --   "<leader>6",
+      --   "<cmd>TroubleToggle lsp_references<cr>",
+      --   desc = "Analyzer - References",
+      -- },
       -- {
       --   "<leader>tl",
       --   "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
@@ -148,15 +172,19 @@ return {
       "nvim-lua/plenary.nvim",
     },
   },
-  {
-    "crnvl96/lazydocker.nvim",
-    -- event = "VeryLazy",
-    cmd = "LazyDocker",
-    opts = {}, -- automatically calls `require("lazydocker").setup()`
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-    },
-  },
+  -- {
+  --   "crnvl96/lazydocker.nvim",
+  --   -- event = "VeryLazy",
+  --   cmd = "LazyDocker",
+  --   opts = {}, -- automatically calls `require("lazydocker").setup()`
+  --   dependencies = {
+  --     "MunifTanjim/nui.nvim",
+  --   },
+  -- },
+  -- {
+  --   "MunifTanjim/nui.nvim",
+  --   lazy = false,
+  -- },
   {
     "smoka7/hop.nvim",
     cmd = { "HopWord" },
@@ -199,6 +227,17 @@ return {
     end, -- Override to setup mason-lspconfig
   },
   { lazy = false, "echasnovski/mini.pick", version = "*" },
+  -- {
+  --   "grapp-dev/nui-components.nvim",
+  --   lazy = false,
+  -- },
+    -- {
+    -- "grapp-dev/nui-components.nvim",
+    -- dependencies = {
+    --     "MunifTanjim/nui.nvim"
+    --     },
+    -- lazy = false
+    -- },
   -- These are some examples, uncomment them if you want to see them work!
   -- {
   --   "neovim/nvim-lspconfig",

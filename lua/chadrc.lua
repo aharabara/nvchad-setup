@@ -5,7 +5,7 @@
 local M = {}
 
 M.base64 = {
-  theme = "vscode_dark",
+  theme = "dark_horizon",
 
   -- hl_override = {
   -- 	Comment = { italic = true },

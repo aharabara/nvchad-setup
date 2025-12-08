@@ -5,7 +5,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 require("nvchad.configs.lspconfig").defaults()
 
 -- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "ts_ls", "clangd", "bashls", "marksman"}
+local servers = { "html", "cssls", "ts_ls", "clangd", "bashls", "marksman", "pyrefly"}
 vim.lsp.enable(servers)
 
 

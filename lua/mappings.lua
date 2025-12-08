@@ -16,10 +16,14 @@ vim.keymap.set("n", "<leader>1", function()
 end)
 -- map("n", "<leader>1", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 -- map("n", "<leader>1x", function() require("oil").close() end, { desc = "Open parent directory" })
-map("n", "<leader>4", "<cmd>OverseerToggle<CR>", { desc = "Open Terminal" })
-map("n", "<leader>5", "<cmd>LazyDocker<CR>", { desc = "Open LazyDocker" })
+map("n", "<leader>2", "<cmd>OverseerToggle<CR>", { desc = "Open Terminal" })
+map("n", "<leader>8", "<cmd>OverseerRun<CR>", { desc = "Open Terminal" })
+map("n", "<leader>7", "<cmd>LazyDocker<CR>", { desc = "Open LazyDocker" })
 map("n", "<leader>9", "<cmd>LazyGit<CR>", { desc = "Open LazyGit" })
-map("n", "<leader>0", "<cmd>Telescope projects<CR>", { desc = "List projects" })
+
+map({ "n", "t" }, "<leader>0", function()
+  require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm" }
+end, { desc = "terminal toggleable horizontal term" })
 
 map("n", "<A-Up>", ":m .-2<CR>")
 map("n", "<A-Down>", ":m .+1<CR>")
