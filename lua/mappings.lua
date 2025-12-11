@@ -19,7 +19,9 @@ end)
 map("n", "<leader>2", "<cmd>OverseerToggle<CR>", { desc = "Open Terminal" })
 map("n", "<leader>8", "<cmd>OverseerRun<CR>", { desc = "Open Terminal" })
 map("n", "<leader>7", "<cmd>LazyDocker<CR>", { desc = "Open LazyDocker" })
-map("n", "<leader>9", "<cmd>LazyGit<CR>", { desc = "Open LazyGit" })
+map("n", "<leader>9", function()
+  Snacks.lazygit()
+end, { desc = "Open LazyGit" })
 
 map({ "n", "t" }, "<leader>0", function()
   require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm" }
